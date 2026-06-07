@@ -1,0 +1,1213 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Academia RonaldBYTE</title>
+<link rel="stylesheet" href="estiloregistro.css">
+</head>
+<body>
+
+
+<!-- Loading Overlay -->
+<div class="loading-overlay" id="loading-overlay">
+  <div class="loading-logo">📚 RonaldBYTE</div>
+  <div class="spinner"></div>
+  <div class="loading-text">Cargando...</div>
+</div>
+
+<!-- Toast Notification -->
+<div class="toast" id="toast"></div>
+
+<!-- ============ AUTH SCREEN ============ -->
+<div class="screen" id="screen-auth">
+  <div class="auth-left">
+    <div class="brand">
+    </div>
+  </div>
+
+  <div class="auth-right">
+    <div class="auth-tabs">
+      <div class="auth-tab active" id="tab-login" onclick="switchTab('login')">Iniciar sesión</div>
+      <div class="auth-tab" id="tab-register" onclick="switchTab('register')">Registrarse</div>
+    </div>
+
+    <!-- LOGIN FORM -->
+    <div class="auth-form active" id="form-login">
+      <div class="form-group">
+        <label class="form-label">Correo Gmail</label>
+        <input class="form-input" type="email" id="login-email" placeholder="tucorreo@gmail.com" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Contraseña</label>
+        <input class="form-input" type="password" id="login-password" placeholder="••••••••" />
+      </div>
+      <div id="login-error" class="form-error" style="display:none;"></div>
+      <button class="btn-primary" onclick="handleLogin()">Iniciar sesión</button>
+      <div class="divider">o continúa con</div>
+      <button class="gmail-btn" onclick="handleGmailLogin()">
+        <svg class="gmail-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+          <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+          <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+          <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+        </svg>
+        Acceder con Gmail
+      </button>
+    </div>
+
+    <!-- REGISTER FORM -->
+    <div class="auth-form" id="form-register">
+      <div class="form-group">
+        <label class="form-label">Nombre completo</label>
+        <input class="form-input" type="text" id="reg-name" placeholder="Ej: Enzo Zarate" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Correo Gmail</label>
+        <input class="form-input" type="email" id="reg-email" placeholder="tucorreo@gmail.com" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Contraseña</label>
+        <input class="form-input" type="password" id="reg-password" placeholder="Mínimo 6 caracteres" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Soy...</label>
+        <div class="role-selector">
+            <div class="role-option" id="role-teacher" onclick="selectRole('profesor')">🎓 Profesor</div>
+        </div>
+      </div>
+      <div id="reg-error" class="form-error" style="display:none;"></div>
+      <div id="reg-success" style="display:none;"></div>
+      <button class="btn-primary" id="btn-register" onclick="handleRegister()">Crear cuenta</button>
+      <div style="font-size:12px;color:var(--text3);text-align:center;">
+        Se enviará un correo de confirmación a tu Gmail
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ DASHBOARD SCREEN ============ -->
+<div class="screen" id="screen-dashboard">
+  <div class="topbar">
+    <div class="topbar-brand">👨‍💼 RonaldBYTE</div>
+    <nav class="topbar-nav">
+      <div class="nav-item active" id="nav-courses" onclick="showView('courses')">Cursos</div>
+      <div class="nav-item" id="nav-profile" onclick="showView('profile')">Mi perfil</div>
+    </nav>
+    <div class="topbar-user">
+      <div class="user-avatar" id="topbar-avatar"></div>
+      <div>
+        <div class="user-name" id="topbar-name"></div>
+        <div class="user-role-badge" id="topbar-role"></div>
+      </div>
+      <button class="btn-logout" onclick="handleLogout()">Salir</button>
+    </div>
+  </div>
+
+  <div class="dashboard-content">
+    <!-- COURSES VIEW -->
+    <div class="view active" id="view-courses">
+      <div class="welcome-banner">
+        <div class="welcome-greeting">👋 Bienvenido de nuevo</div>
+        <div class="welcome-name">¡Hola, <span id="welcome-name-text"></span>!</div>
+        <div class="welcome-sub" id="welcome-sub-text"></div>
+        <div class="welcome-stats" id="welcome-stats"></div>
+      </div>
+
+      <!-- Teacher panel to add courses -->
+      <div class="teacher-panel" id="teacher-panel" style="display:none;">
+        <div class="teacher-panel-title">🎓 Panel del Profesor — Gestionar cursos</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Nombre del curso</label>
+            <input class="form-input" id="course-name" placeholder="Ej: Matemáticas Avanzadas" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Materia / Categoría</label>
+            <input class="form-input" id="course-subject" placeholder="Ej: Matemáticas" />
+          </div>
+        </div>
+        <div class="form-group" style="margin-bottom:14px;">
+          <label class="form-label">Descripción</label>
+          <input class="form-input" id="course-desc" placeholder="Breve descripción del curso" />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Emoji del curso</label>
+            <input class="form-input" id="course-emoji" placeholder="📐" style="font-size:20px;" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Color de fondo</label>
+            <select class="form-input" id="course-color">
+              <option value="rgba(91,156,246,0.12)">Azul</option>
+              <option value="rgba(232,197,71,0.12)">Dorado</option>
+              <option value="rgba(76,175,125,0.12)">Verde</option>
+              <option value="rgba(224,82,82,0.1)">Rojo</option>
+              <option value="rgba(180,130,240,0.12)">Violeta</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn-primary" onclick="addCourse()" style="width:auto;padding:10px 24px;">+ Agregar curso</button>
+      </div>
+
+      <div class="section-header">
+        <div class="section-title">Cursos disponibles</div>
+      </div>
+      <div class="courses-grid" id="courses-grid"></div>
+    </div>
+
+    <!-- COURSE DETAIL VIEW -->
+    <div class="view" id="view-course-detail">
+      <div class="back-btn" onclick="showView('courses')">
+        <span class="back-arrow">←</span> Volver a cursos
+      </div>
+      <div class="course-detail-header" id="course-detail-header"></div>
+
+      <!-- Teacher: add activity -->
+      <div class="teacher-panel" id="activity-panel" style="display:none;margin-bottom:24px;">
+        <div class="teacher-panel-title">➕ Subir nueva actividad</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Nombre de la actividad</label>
+            <input class="form-input" id="act-name" placeholder="Ej: Tarea 1 — Ecuaciones" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Tipo</label>
+            <select class="form-input" id="act-type">
+              <option value="doc">📄 Documento / Material</option>
+              <option value="task">📝 Tarea / Ejercicio</option>
+              <option value="quiz">🧠 Evaluación / Quiz</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group" style="margin-bottom:14px;">
+          <label class="form-label">Descripción</label>
+          <input class="form-input" id="act-desc" placeholder="Instrucciones o descripción" />
+        </div>
+        <div class="form-group" style="margin-bottom:16px;">
+          <label class="form-label">Archivo adjunto (opcional)</label>
+          <div class="upload-area" id="teacher-upload-area" onclick="document.getElementById('teacher-file-input').click()" 
+               ondragover="event.preventDefault();this.classList.add('dragging')"
+               ondragleave="this.classList.remove('dragging')"
+               ondrop="handleTeacherDrop(event)">
+            <div class="upload-icon">📎</div>
+            <div class="upload-text">Haz clic o arrastra un archivo aquí</div>
+            <div class="upload-hint">PDF, Word, imágenes, ZIP, etc.</div>
+          </div>
+          <input type="file" id="teacher-file-input" onchange="handleTeacherFile(this)" />
+          <div id="teacher-file-info" style="display:none;margin-top:8px;"></div>
+        </div>
+        <button class="btn-primary" onclick="addActivity()" style="width:auto;padding:10px 24px;">Publicar actividad</button>
+      </div>
+
+      <div class="section-header">
+        <div class="section-title">Actividades del curso</div>
+      </div>
+      <div class="activities-list" id="activities-list"></div>
+    </div>
+
+    <!-- PROFILE VIEW -->
+    <div class="view" id="view-profile">
+      <div class="section-title" style="margin-bottom:28px;font-size:28px;">Mi perfil</div>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:32px;max-width:480px;">
+        <div style="display:flex;align-items:center;gap:20px;margin-bottom:28px;">
+          <div class="user-avatar" id="profile-avatar" style="width:64px;height:64px;font-size:24px;"></div>
+          <div>
+            <div id="profile-name" style="font-family:'Fraunces',serif;font-size:22px;font-weight:500;color:var(--text);margin-bottom:4px;"></div>
+            <div id="profile-role" style="font-size:13px;color:var(--text2);"></div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:14px;">
+          <div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);">
+            <span style="font-size:13px;color:var(--text3);">Correo</span>
+            <span id="profile-email" style="font-size:13px;color:var(--text);"></span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);">
+            <span style="font-size:13px;color:var(--text3);">Rol</span>
+            <span id="profile-role2" style="font-size:13px;color:var(--accent);font-weight:500;"></span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:12px 0;">
+            <span style="font-size:13px;color:var(--text3);">Miembro desde</span>
+            <span id="profile-date" style="font-size:13px;color:var(--text);"></span>
+          </div>
+        </div>
+        <div style="margin-top:28px;padding-top:20px;border-top:1px solid var(--border);">
+          <button onclick="confirmDeleteAccount()" style="width:100%;padding:11px;background:rgba(224,82,82,0.08);border:1px solid rgba(224,82,82,0.3);color:var(--red);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='rgba(224,82,82,0.15)'" onmouseout="this.style.background='rgba(224,82,82,0.08)'">
+            🗑️ Eliminar mi cuenta
+          </button>
+          <div style="font-size:11px;color:var(--text3);text-align:center;margin-top:8px;">Esta acción es permanente y no se puede deshacer</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Gmail — Google-style account picker modal -->
+<div class="modal-overlay" id="gmail-account-modal" style="background:rgba(0,0,0,0.5);">
+  <div style="background:#fff;border-radius:28px;width:360px;max-width:95vw;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,0.3);">
+
+    <!-- Google header -->
+    <div style="padding:28px 28px 0;text-align:center;">
+      <svg width="75" height="24" viewBox="0 0 75 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-bottom:16px;">
+        <path d="M29.88 12.27c0-.87-.08-1.7-.22-2.5H15.6v4.73h8.02c-.35 1.83-1.4 3.38-2.97 4.42v3.67h4.8c2.81-2.59 4.43-6.4 4.43-10.32z" fill="#4285F4"/>
+        <path d="M15.6 23.5c4.02 0 7.4-1.34 9.86-3.61l-4.8-3.67c-1.33.89-3.04 1.41-5.06 1.41-3.89 0-7.19-2.63-8.37-6.16H2.28v3.79C4.73 20.98 9.8 23.5 15.6 23.5z" fill="#34A853"/>
+        <path d="M7.23 11.47A8.54 8.54 0 0 1 7.23 8.53V4.74H2.28A14.5 14.5 0 0 0 .77 12c0 2.33.56 4.54 1.51 6.5l4.95-3.79a8.58 8.58 0 0 1 0-3.24z" fill="#FBBC05"/>
+        <path d="M15.6 4.84c2.19 0 4.16.75 5.71 2.23l4.28-4.28C23 .85 19.62-.5 15.6-.5 9.8-.5 4.73 2.02 2.28 6.74l4.95 3.79c1.18-3.53 4.48-5.69 8.37-5.69z" fill="#EA4335"/>
+        <text x="38" y="17" font-family="'Product Sans',Arial,sans-serif" font-size="14" fill="#202124">oogle</text>
+      </svg>
+      <div style="font-size:22px;font-weight:400;color:#202124;margin-bottom:6px;font-family:Arial,sans-serif;">Acceder</div>
+      <div style="font-size:14px;color:#5f6368;margin-bottom:0;font-family:Arial,sans-serif;">con tu cuenta de Google</div>
+    </div>
+
+    <!-- Account list -->
+    <div style="margin-top:16px;" id="gmail-accounts-list"></div>
+
+    <!-- Use another account row -->
+    <div id="gmail-other-account-row" style="display:flex;align-items:center;gap:14px;padding:14px 24px;cursor:pointer;border-top:1px solid #e0e0e0;" onmouseover="this.style.background='#f1f3f4'" onmouseout="this.style.background='transparent'" onclick="gmailUseOtherAccount()">
+      <div style="width:40px;height:40px;border-radius:50%;border:1.5px solid #bdbdbd;display:flex;align-items:center;justify-content:center;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="#5f6368"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 13v-4H8l4-4 4 4h-3v4h-2z"/></svg>
+      </div>
+      <span style="font-size:14px;color:#202124;font-family:Arial,sans-serif;">Usar otra cuenta</span>
+    </div>
+
+    <!-- Footer buttons -->
+    <div style="padding:16px 24px;display:flex;justify-content:space-between;align-items:center;border-top:1px solid #e0e0e0;">
+      <button onclick="document.getElementById('gmail-account-modal').classList.remove('open')" style="padding:9px 22px;background:transparent;border:1px solid #dadce0;border-radius:4px;font-family:Arial,sans-serif;font-size:13px;color:#1a73e8;cursor:pointer;font-weight:500;" onmouseover="this.style.background='#e8f0fe'" onmouseout="this.style.background='transparent'">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Delete account confirmation modal -->
+<div class="modal-overlay" id="delete-account-modal">
+  <div class="modal" style="max-width:420px;">
+    <div style="text-align:center;margin-bottom:20px;">
+      <div style="font-size:40px;margin-bottom:12px;">⚠️</div>
+      <div class="modal-title" style="margin-bottom:8px;">Eliminar cuenta</div>
+      <div style="font-size:13px;color:var(--text2);line-height:1.6;">
+        Estás a punto de eliminar permanentemente tu cuenta. Se borrarán todos tus datos, entregas y acceso a la plataforma.<br>
+        <strong style="color:var(--red);">Esta acción no se puede deshacer.</strong>
+      </div>
+    </div>
+    <div style="font-size:12px;color:var(--text3);margin-bottom:8px;">Escribe tu correo para confirmar:</div>
+    <input class="form-input" id="delete-confirm-email" placeholder="tucorreo@gmail.com" style="margin-bottom:16px;" />
+    <div id="delete-error" class="form-error" style="display:none;margin-bottom:10px;"></div>
+    <div style="display:flex;gap:10px;">
+      <button onclick="executeDeleteAccount()" style="flex:1;padding:11px;background:var(--red);border:none;color:#fff;border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;">Sí, eliminar cuenta</button>
+      <button onclick="document.getElementById('delete-account-modal').classList.remove('open')" class="btn-secondary" style="flex:0.5;">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Submit activity modal -->
+<div class="modal-overlay" id="submit-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-title" id="submit-modal-title">Entregar actividad</div>
+    <div style="font-size:13px;color:var(--text2);margin-bottom:20px;" id="submit-modal-desc"></div>
+    <div class="upload-area" id="student-upload-area"
+         onclick="document.getElementById('upload-file-input').click()"
+         ondragover="event.preventDefault();this.classList.add('dragging')"
+         ondragleave="this.classList.remove('dragging')"
+         ondrop="handleStudentDrop(event)">
+      <div class="upload-icon">📤</div>
+      <div class="upload-text">Haz clic o arrastra tu archivo aquí</div>
+      <div class="upload-hint">Sube tu actividad resuelta</div>
+    </div>
+    <input type="file" id="upload-file-input" onchange="handleStudentFile(this)" />
+    <div id="student-file-info" style="margin-top:12px;display:none;"></div>
+    <div style="display:flex;gap:10px;margin-top:20px;">
+      <button class="btn-primary" onclick="submitActivity()" id="btn-submit-activity" style="flex:1;">Entregar</button>
+      <button class="btn-secondary" onclick="closeModal()" style="flex:0.4;">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// =============================================
+// DATABASE — IndexedDB
+// =============================================
+let db;
+const DB_NAME = 'eduplatforma_db';
+const DB_VERSION = 2;
+
+function initDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(DB_NAME, DB_VERSION);
+    req.onupgradeneeded = (e) => {
+      const d = e.target.result;
+      if (!d.objectStoreNames.contains('users')) {
+        const us = d.createObjectStore('users', { keyPath: 'id', autoIncrement: true });
+        us.createIndex('email', 'email', { unique: true });
+      }
+      if (!d.objectStoreNames.contains('courses')) {
+        d.createObjectStore('courses', { keyPath: 'id', autoIncrement: true });
+      }
+      if (!d.objectStoreNames.contains('activities')) {
+        const as = d.createObjectStore('activities', { keyPath: 'id', autoIncrement: true });
+        as.createIndex('courseId', 'courseId', { unique: false });
+      }
+      if (!d.objectStoreNames.contains('submissions')) {
+        const ss = d.createObjectStore('submissions', { keyPath: 'id', autoIncrement: true });
+        ss.createIndex('activityId_userId', ['activityId', 'userId'], { unique: false });
+      }
+    };
+    req.onsuccess = (e) => { db = e.target.result; resolve(db); };
+    req.onerror = () => reject(req.error);
+  });
+}
+
+function dbAdd(store, data) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(store, 'readwrite');
+    const req = tx.objectStore(store).add(data);
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+function dbGetAll(store) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(store, 'readonly');
+    const req = tx.objectStore(store).getAll();
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+function dbGetByIndex(store, indexName, value) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(store, 'readonly');
+    const req = tx.objectStore(store).index(indexName).getAll(value);
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+function dbGet(store, id) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(store, 'readonly');
+    const req = tx.objectStore(store).get(id);
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+function dbPut(store, data) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(store, 'readwrite');
+    const req = tx.objectStore(store).put(data);
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+function dbDelete(store, id) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(store, 'readwrite');
+    const req = tx.objectStore(store).delete(id);
+    req.onsuccess = () => resolve();
+    req.onerror = () => reject(req.error);
+  });
+}
+function dbClearAll(store) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(store, 'readwrite');
+    const req = tx.objectStore(store).clear();
+    req.onsuccess = () => resolve();
+    req.onerror = () => reject(req.error);
+  });
+}
+
+// =============================================
+// STATE
+// =============================================
+let currentUser = null;
+let selectedRole = 'estudiante';
+let currentCourseId = null;
+let currentActivityId = null;
+let pendingStudentFile = null;
+let pendingTeacherFile = null;
+
+// =============================================
+// EMAIL — EmailJS (envío real de correos)
+// =============================================
+// REEMPLAZA estos 3 valores con los tuyos de emailjs.com
+const EMAILJS_SERVICE_ID  = 'service_yd3tbvd';
+const EMAILJS_TEMPLATE_ID = 'template_y9ipeav';
+const EMAILJS_PUBLIC_KEY  = 'bYaBJ1JCyeulC0r27';
+
+async function sendConfirmationEmail(toEmail, toName, role) {
+  const roleLabel = role === 'profesor' ? 'Profesor/a' : 'Estudiante';
+  try {
+    if (typeof emailjs === 'undefined') {
+      console.warn('[EmailJS] Librería no cargada.');
+      return;
+    }
+    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+      to_email:  toEmail,
+      to_name:   toName,
+      user_role: roleLabel,
+      from_name: 'EduPlataforma',
+      message:   'Hola ' + toName + ', tu cuenta de ' + roleLabel + ' fue creada exitosamente. Ya puedes iniciar sesión con ' + toEmail + '.'
+    }, EMAILJS_PUBLIC_KEY);
+    showToast('📧 Correo de confirmación enviado a ' + toEmail, 'success');
+  } catch (err) {
+    console.error('[EmailJS] Error:', err);
+    showToast('⚠️ Cuenta creada, pero no se pudo enviar el correo. Revisa tu configuración de EmailJS.', 'error');
+  }
+}
+
+// =============================================
+// AUTH FUNCTIONS
+// =============================================
+function switchTab(tab) {
+  document.getElementById('tab-login').classList.toggle('active', tab === 'login');
+  document.getElementById('tab-register').classList.toggle('active', tab === 'register');
+  document.getElementById('form-login').classList.toggle('active', tab === 'login');
+  document.getElementById('form-register').classList.toggle('active', tab === 'register');
+  if (tab === 'register') {
+    document.getElementById('btn-register').style.display = 'block';
+    document.getElementById('reg-success').style.display = 'none';
+    document.getElementById('reg-error').style.display = 'none';
+  }
+}
+
+function selectRole(role) {
+  selectedRole = role;
+  document.getElementById('role-student').classList.toggle('selected', role === 'estudiante');
+  document.getElementById('role-teacher').classList.toggle('selected', role === 'profesor');
+}
+
+async function handleRegister() {
+  const name = document.getElementById('reg-name').value.trim();
+  const email = document.getElementById('reg-email').value.trim().toLowerCase();
+  const password = document.getElementById('reg-password').value;
+  const errEl = document.getElementById('reg-error');
+  const succEl = document.getElementById('reg-success');
+  const btn = document.getElementById('btn-register');
+
+  errEl.style.display = 'none';
+  succEl.style.display = 'none';
+
+  if (!name) return showErr(errEl, 'Por favor ingresa tu nombre completo.');
+  if (!email || !email.includes('@gmail.com')) return showErr(errEl, 'Ingresa un correo Gmail válido (@gmail.com).');
+  if (password.length < 6) return showErr(errEl, 'La contraseña debe tener al menos 6 caracteres.');
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Registrando...';
+
+  try {
+    // Check if email already exists
+    const allUsers = await dbGetAll('users');
+    const exists = allUsers.find(u => u.email === email);
+    if (exists) {
+      showErr(errEl, 'Ya existe una cuenta con ese correo. Inicia sesión.');
+      btn.disabled = false;
+      btn.innerHTML = 'Crear cuenta';
+      return;
+    }
+
+    const userId = await dbAdd('users', {
+      name,
+      email,
+      password: btoa(password), // basic encoding
+      role: selectedRole,
+      createdAt: new Date().toISOString(),
+      gmailLinked: true
+    });
+
+    // Send email confirmation
+    sendConfirmationEmail(email, name, selectedRole);
+
+    succEl.innerHTML = `
+      <div style="background:rgba(76,175,125,0.08);border:1px solid rgba(76,175,125,0.2);border-radius:10px;padding:20px 22px;text-align:center;">
+        <div style="font-size:28px;margin-bottom:12px;">🎉</div>
+        <div style="font-family:'Fraunces',serif;font-size:20px;font-weight:600;color:#4caf7d;margin-bottom:8px;">¡Registro completo!</div>
+        <div style="font-size:13px;color:var(--text2);line-height:1.6;">
+          Tu cuenta fue creada exitosamente, <strong style="color:var(--text);">\${name}</strong>.<br>
+          Se ha enviado una notificación de confirmación a <strong style="color:var(--text);">\${email}</strong>.<br>
+          <span style="margin-top:8px;display:block;color:var(--text3);font-size:12px;">En unos segundos serás redirigido a <em>Iniciar sesión</em>...</span>
+        </div>
+      </div>`;
+    succEl.style.display = 'block';
+
+    // Limpiar formulario y mostrar solo "Registro completo — inicia sesión"
+    document.getElementById('reg-name').value = '';
+    document.getElementById('reg-email').value = '';
+    document.getElementById('reg-password').value = '';
+    document.getElementById('btn-register').style.display = 'none';
+    setTimeout(() => switchTab('login'), 3500);
+
+  } catch (err) {
+    showErr(errEl, 'Error al crear la cuenta. Inténtalo de nuevo.');
+    console.error(err);
+  }
+
+  btn.disabled = false;
+  btn.innerHTML = 'Crear cuenta';
+}
+
+async function handleLogin() {
+  const email = document.getElementById('login-email').value.trim().toLowerCase();
+  const password = document.getElementById('login-password').value;
+  const errEl = document.getElementById('login-error');
+  errEl.style.display = 'none';
+
+  if (!email || !password) return showErr(errEl, 'Completa todos los campos.');
+
+  try {
+    const allUsers = await dbGetAll('users');
+    const user = allUsers.find(u => u.email === email && u.password === btoa(password));
+    if (!user) return showErr(errEl, 'Correo o contraseña incorrectos.');
+    loginUser(user);
+  } catch {
+    showErr(errEl, 'Error al iniciar sesión.');
+  }
+}
+
+async function handleGmailLogin() {
+  const email = prompt('Ingresa tu Gmail para acceder o registrarte:');
+  if (!email || !email.includes('@gmail.com')) {
+    showToast('❌ Ingresa un correo @gmail.com válido', 'error');
+    return;
+  }
+  const emailLower = email.trim().toLowerCase();
+  const allUsers = await dbGetAll('users');
+  let user = allUsers.find(u => u.email === emailLower);
+
+  if (user) {
+    // Account exists — show Google-style picker
+    const result = await showGmailAccountModal(user);
+    if (result && result.action === 'login') {
+      loginUser(result.user);
+    }
+    return;
+  }
+
+  // No account — create one via Gmail
+  const name = emailLower.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+  const id = await dbAdd('users', {
+    name, email: emailLower, password: '', role: 'estudiante',
+    createdAt: new Date().toISOString(), gmailLinked: true
+  });
+  sendConfirmationEmail(emailLower, name, 'estudiante');
+  user = { id, name, email: emailLower, role: 'estudiante', createdAt: new Date().toISOString() };
+  showToast('🎉 Cuenta creada. Iniciando sesión...', 'success');
+  loginUser(user);
+}
+
+let _gmailPickerResolve = null;
+
+function showGmailAccountModal(user) {
+  return new Promise(async (resolve) => {
+    _gmailPickerResolve = resolve;
+    const overlay = document.getElementById('gmail-account-modal');
+    const list = document.getElementById('gmail-accounts-list');
+    list.innerHTML = '';
+
+    // Load ALL registered users to show like Google does
+    const allUsers = await dbGetAll('users');
+    // Always show the matched user first
+    const ordered = [user, ...allUsers.filter(u => u.id !== user.id)].slice(0, 5);
+
+    for (const u of ordered) {
+      const initials = u.name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+      const colors = ['#1a73e8','#34a853','#ea4335','#fbbc04','#9c27b0'];
+      const color = colors[u.id % colors.length] || '#1a73e8';
+      const isActive = u.id === user.id;
+
+      const row = document.createElement('div');
+      row.style.cssText = 'display:flex;align-items:center;gap:14px;padding:12px 24px;cursor:pointer;position:relative;';
+      row.onmouseover = () => row.style.background = '#f1f3f4';
+      row.onmouseout  = () => row.style.background = 'transparent';
+      row.innerHTML = `
+        <div style="width:40px;height:40px;border-radius:50%;background:${color};display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600;color:#fff;flex-shrink:0;font-family:Arial,sans-serif;">${initials}</div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:14px;color:#202124;font-family:Arial,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${u.name}</div>
+          <div style="font-size:12px;color:#5f6368;font-family:Arial,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${u.email}</div>
+        </div>
+        <div style="display:flex;gap:6px;align-items:center;">
+          ${isActive ? '<span style="font-size:11px;background:#e8f0fe;color:#1a73e8;padding:2px 8px;border-radius:10px;font-family:Arial,sans-serif;">Principal</span>' : ''}
+          <button onclick="event.stopPropagation();gmailDeleteUser(${u.id})" title="Eliminar cuenta" style="width:28px;height:28px;border-radius:50%;background:transparent;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#ea4335;font-size:14px;" onmouseover="this.style.background='#fce8e6'" onmouseout="this.style.background='transparent'">✕</button>
+        </div>`;
+
+      row.onclick = () => {
+        overlay.classList.remove('open');
+        _gmailPickerResolve && _gmailPickerResolve({action:'login', user: u});
+        _gmailPickerResolve = null;
+      };
+      list.appendChild(row);
+    }
+
+    overlay.classList.add('open');
+  });
+}
+
+async function gmailDeleteUser(userId) {
+  const allUsers = await dbGetAll('users');
+  const u = allUsers.find(x => x.id === userId);
+  if (!u) return;
+  if (!confirm('¿Eliminar la cuenta de ' + u.name + ' (' + u.email + ')? Esta acción no se puede deshacer.')) return;
+  await dbDelete('users', userId);
+  const allSubs = await dbGetAll('submissions');
+  for (const s of allSubs) { if (s.userId === userId) await dbDelete('submissions', s.id); }
+  if (u.role === 'profesor') {
+    const allCourses = await dbGetAll('courses');
+    for (const c of allCourses) {
+      if (c.teacherId === userId) {
+        const acts = await dbGetByIndex('activities', 'courseId', c.id);
+        for (const a of acts) await dbDelete('activities', a.id);
+        await dbDelete('courses', c.id);
+      }
+    }
+  }
+  // If deleted user is current user, logout
+  if (currentUser && currentUser.id === userId) {
+    document.getElementById('gmail-account-modal').classList.remove('open');
+    currentUser = null;
+    sessionStorage.removeItem('edu_user');
+    showScreen('screen-auth');
+    showToast('✅ Cuenta eliminada', 'success');
+    _gmailPickerResolve && _gmailPickerResolve(null);
+    _gmailPickerResolve = null;
+    return;
+  }
+  // Refresh the modal list
+  const remaining = await dbGetAll('users');
+  if (remaining.length === 0) {
+    document.getElementById('gmail-account-modal').classList.remove('open');
+    _gmailPickerResolve && _gmailPickerResolve(null);
+    _gmailPickerResolve = null;
+    showToast('✅ Cuenta eliminada', 'success');
+    return;
+  }
+  showGmailAccountModal(remaining[0]);
+  showToast('✅ Cuenta eliminada', 'success');
+}
+
+async function gmailUseOtherAccount() {
+  document.getElementById('gmail-account-modal').classList.remove('open');
+  const email = prompt('Ingresa tu Gmail para registrarte o acceder:');
+  if (!email || !email.includes('@gmail.com')) {
+    showToast('❌ Ingresa un correo @gmail.com válido', 'error');
+    _gmailPickerResolve && _gmailPickerResolve(null);
+    _gmailPickerResolve = null;
+    return;
+  }
+  const emailLower = email.trim().toLowerCase();
+  const allUsers = await dbGetAll('users');
+  let user = allUsers.find(u => u.email === emailLower);
+  if (user) {
+    _gmailPickerResolve && _gmailPickerResolve({action:'login', user});
+    _gmailPickerResolve = null;
+    return;
+  }
+  // New user via Gmail
+  const name = emailLower.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+  const id = await dbAdd('users', { name, email: emailLower, password: '', role: 'estudiante', createdAt: new Date().toISOString(), gmailLinked: true });
+  sendConfirmationEmail(emailLower, name, 'estudiante');
+  user = { id, name, email: emailLower, role: 'estudiante', createdAt: new Date().toISOString() };
+  showToast('🎉 Cuenta nueva creada con Gmail', 'success');
+  _gmailPickerResolve && _gmailPickerResolve({action:'login', user});
+  _gmailPickerResolve = null;
+}
+
+function loginUser(user) {
+  currentUser = user;
+  sessionStorage.setItem('edu_user', JSON.stringify(user));
+  showDashboard();
+}
+
+function handleLogout() {
+  currentUser = null;
+  sessionStorage.removeItem('edu_user');
+  showScreen('screen-auth');
+  switchTab('login');
+  document.getElementById('login-email').value = '';
+  document.getElementById('login-password').value = '';
+}
+
+function confirmDeleteAccount() {
+  document.getElementById('delete-confirm-email').value = '';
+  document.getElementById('delete-error').style.display = 'none';
+  document.getElementById('delete-account-modal').classList.add('open');
+}
+
+async function executeDeleteAccount() {
+  const typed = document.getElementById('delete-confirm-email').value.trim().toLowerCase();
+  const errEl = document.getElementById('delete-error');
+  if (typed !== currentUser.email) {
+    errEl.textContent = 'El correo no coincide con tu cuenta.';
+    errEl.style.display = 'block';
+    return;
+  }
+  await deleteUserAccount(currentUser);
+}
+
+async function deleteUserAccount(user) {
+  try {
+    // Delete user record
+    await dbDelete('users', user.id);
+    // Delete their submissions
+    const allSubs = await dbGetAll('submissions');
+    for (const s of allSubs) {
+      if (s.userId === user.id) await dbDelete('submissions', s.id);
+    }
+    // If teacher: delete their courses and activities
+    if (user.role === 'profesor') {
+      const allCourses = await dbGetAll('courses');
+      for (const c of allCourses) {
+        if (c.teacherId === user.id) {
+          const acts = await dbGetByIndex('activities', 'courseId', c.id);
+          for (const a of acts) await dbDelete('activities', a.id);
+          await dbDelete('courses', c.id);
+        }
+      }
+    }
+    document.getElementById('delete-account-modal').classList.remove('open');
+    document.getElementById('gmail-account-modal').classList.remove('open');
+    currentUser = null;
+    sessionStorage.removeItem('edu_user');
+    showScreen('screen-auth');
+    switchTab('login');
+    showToast('✅ Cuenta eliminada correctamente', 'success');
+  } catch (err) {
+    showToast('❌ Error al eliminar la cuenta', 'error');
+    console.error(err);
+  }
+}
+
+// =============================================
+// DASHBOARD
+// =============================================
+async function showDashboard() {
+  showScreen('screen-dashboard');
+
+  const initials = currentUser.name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+
+  document.getElementById('topbar-avatar').textContent = initials;
+  document.getElementById('topbar-name').textContent = currentUser.name.split(' ')[0];
+  document.getElementById('topbar-role').textContent = currentUser.role === 'profesor' ? '🎓 Profesor' : '👤 Estudiante';
+
+  document.getElementById('welcome-name-text').textContent = currentUser.name.split(' ')[0];
+  document.getElementById('welcome-sub-text').textContent = currentUser.role === 'profesor'
+    ? 'Aquí puedes gestionar y publicar tus cursos y actividades.'
+    : 'Explora los cursos, descarga materiales y entrega tus actividades.';
+
+  document.getElementById('profile-avatar').textContent = initials;
+  document.getElementById('profile-name').textContent = currentUser.name;
+  document.getElementById('profile-role').textContent = currentUser.role === 'profesor' ? '🎓 Profesor' : '👤 Estudiante';
+  document.getElementById('profile-email').textContent = currentUser.email;
+  document.getElementById('profile-role2').textContent = currentUser.role === 'profesor' ? 'Profesor' : 'Estudiante';
+  document.getElementById('profile-date').textContent = new Date(currentUser.createdAt).toLocaleDateString('es-PE', {year:'numeric',month:'long',day:'numeric'});
+
+  // Show teacher panel
+  document.getElementById('teacher-panel').style.display = currentUser.role === 'profesor' ? 'block' : 'none';
+
+  await loadCourses();
+  showView('courses');
+}
+
+async function loadCourses() {
+  const courses = await dbGetAll('courses');
+  const grid = document.getElementById('courses-grid');
+  grid.innerHTML = '';
+
+  const stats = document.getElementById('welcome-stats');
+  stats.innerHTML = `
+    <div class="welcome-stat"><div class="welcome-stat-num">${courses.length}</div><div class="welcome-stat-label">Cursos</div></div>
+  `;
+
+  if (courses.length === 0) {
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;">
+      <div class="empty-icon">📭</div>
+      <div class="empty-text">${currentUser.role === 'profesor' ? 'Aún no has publicado cursos. Crea el primero arriba.' : 'El profesor aún no ha publicado cursos.'}</div>
+    </div>`;
+    return;
+  }
+
+  for (const course of courses) {
+    const activities = await dbGetByIndex('activities', 'courseId', course.id);
+    const card = document.createElement('div');
+    card.className = 'course-card';
+    card.onclick = () => openCourse(course.id);
+    card.innerHTML = `
+      <div class="course-card-header" style="background:${course.color || 'rgba(91,156,246,0.12)'}">
+        <span>${course.emoji || '📚'}</span>
+      </div>
+      <div class="course-card-body">
+        <div class="course-subject">${course.subject || 'General'}</div>
+        <div class="course-title">${course.name}</div>
+        <div class="course-desc">${course.desc || 'Sin descripción'}</div>
+        <div class="course-meta">
+          <div class="course-teacher">
+            <div class="teacher-dot">${(course.teacherName || 'P').charAt(0).toUpperCase()}</div>
+            <span>${course.teacherName || 'Profesor'}</span>
+          </div>
+          <span>${activities.length} actividad${activities.length !== 1 ? 'es' : ''}</span>
+        </div>
+      </div>`;
+    grid.appendChild(card);
+  }
+}
+
+async function addCourse() {
+  const name = document.getElementById('course-name').value.trim();
+  const subject = document.getElementById('course-subject').value.trim();
+  const desc = document.getElementById('course-desc').value.trim();
+  const emoji = document.getElementById('course-emoji').value.trim() || '📚';
+  const color = document.getElementById('course-color').value;
+
+  if (!name) return showToast('❌ Escribe el nombre del curso', 'error');
+
+  await dbAdd('courses', {
+    name, subject, desc, emoji, color,
+    teacherId: currentUser.id,
+    teacherName: currentUser.name,
+    createdAt: new Date().toISOString()
+  });
+
+  document.getElementById('course-name').value = '';
+  document.getElementById('course-subject').value = '';
+  document.getElementById('course-desc').value = '';
+  document.getElementById('course-emoji').value = '';
+
+  await loadCourses();
+  showToast('✅ Curso publicado correctamente', 'success');
+}
+
+// =============================================
+// COURSE DETAIL
+// =============================================
+async function openCourse(courseId) {
+  currentCourseId = courseId;
+  const course = await dbGet('courses', courseId);
+
+  document.getElementById('course-detail-header').innerHTML = `
+    <div class="course-detail-emoji">${course.emoji || '📚'}</div>
+    <div class="course-detail-info">
+      <div class="course-detail-subject">${course.subject || 'General'}</div>
+      <div class="course-detail-title">${course.name}</div>
+      <div class="course-detail-desc">${course.desc || 'Sin descripción'}</div>
+    </div>`;
+
+  const isTeacher = currentUser.role === 'profesor';
+  document.getElementById('activity-panel').style.display = isTeacher ? 'block' : 'none';
+
+  await loadActivities(courseId);
+  showView('course-detail');
+}
+
+async function loadActivities(courseId) {
+  const activities = await dbGetByIndex('activities', 'courseId', courseId);
+  const list = document.getElementById('activities-list');
+  list.innerHTML = '';
+
+  if (activities.length === 0) {
+    list.innerHTML = `<div class="empty-state">
+      <div class="empty-icon">📂</div>
+      <div class="empty-text">${currentUser.role === 'profesor' ? 'Aún no hay actividades. Publica la primera arriba.' : 'El profesor aún no ha publicado actividades.'}</div>
+    </div>`;
+    return;
+  }
+
+  for (const act of activities) {
+    const submissions = await dbGetByIndex('submissions', 'activityId_userId', [act.id, currentUser.id]);
+    const hasSubmitted = submissions.length > 0;
+    const isTeacher = currentUser.role === 'profesor';
+
+    const icons = { doc: '📄', task: '📝', quiz: '🧠' };
+    const typeNames = { doc: 'Documento', task: 'Tarea', quiz: 'Evaluación' };
+    const typeClasses = { doc: 'type-doc', task: 'type-task', quiz: 'type-quiz' };
+
+    const item = document.createElement('div');
+    item.className = 'activity-item';
+    item.innerHTML = `
+      <div class="activity-icon ${typeClasses[act.type] || 'type-doc'}">${icons[act.type] || '📄'}</div>
+      <div class="activity-info">
+        <div class="activity-name">${act.name}</div>
+        <div class="activity-meta">
+          ${typeNames[act.type] || 'Material'} · 
+          ${new Date(act.createdAt).toLocaleDateString('es-PE')}
+          ${act.fileName ? ` · <span class="file-badge">📎 ${act.fileName}</span>` : ''}
+        </div>
+        ${act.desc ? `<div style="font-size:12px;color:var(--text2);margin-top:4px;">${act.desc}</div>` : ''}
+      </div>
+      <div class="activity-actions" id="act-actions-${act.id}"></div>`;
+
+    const actions = item.querySelector(`#act-actions-${act.id}`);
+
+    // Download button (always visible)
+    if (act.fileData) {
+      const dlBtn = document.createElement('button');
+      dlBtn.className = 'btn-download';
+      dlBtn.innerHTML = '⬇ Descargar';
+      dlBtn.onclick = (e) => { e.stopPropagation(); downloadActivity(act); };
+      actions.appendChild(dlBtn);
+    }
+
+    // Submit button for students
+    if (!isTeacher) {
+      if (hasSubmitted) {
+        actions.innerHTML += `<div class="submitted-badge">✓ Entregado</div>`;
+      } else {
+        const subBtn = document.createElement('button');
+        subBtn.className = 'btn-submit';
+        subBtn.innerHTML = '📤 Entregar';
+        subBtn.onclick = (e) => { e.stopPropagation(); openSubmitModal(act); };
+        actions.appendChild(subBtn);
+      }
+    } else {
+      // Teacher sees submission count
+      const allSubs = await dbGetByIndex('submissions', 'activityId_userId', [act.id, currentUser.id]);
+      // Just show a tag (read-only, no delete)
+      actions.innerHTML += `<span style="font-size:11px;color:var(--text3);background:var(--bg3);border:1px solid var(--border);padding:4px 8px;border-radius:4px;">Solo vista</span>`;
+    }
+
+    list.appendChild(item);
+  }
+}
+
+async function addActivity() {
+  const name = document.getElementById('act-name').value.trim();
+  const type = document.getElementById('act-type').value;
+  const desc = document.getElementById('act-desc').value.trim();
+
+  if (!name) return showToast('❌ Escribe el nombre de la actividad', 'error');
+
+  let fileData = null, fileName = null, fileType = null;
+  if (pendingTeacherFile) {
+    const result = await readFileAsDataURL(pendingTeacherFile);
+    fileData = result;
+    fileName = pendingTeacherFile.name;
+    fileType = pendingTeacherFile.type;
+  }
+
+  await dbAdd('activities', {
+    courseId: currentCourseId,
+    name, type, desc,
+    fileData, fileName, fileType,
+    teacherId: currentUser.id,
+    createdAt: new Date().toISOString()
+  });
+
+  document.getElementById('act-name').value = '';
+  document.getElementById('act-desc').value = '';
+  document.getElementById('teacher-file-info').style.display = 'none';
+  pendingTeacherFile = null;
+
+  await loadActivities(currentCourseId);
+  showToast('✅ Actividad publicada', 'success');
+}
+
+function downloadActivity(act) {
+  if (!act.fileData) return showToast('❌ Esta actividad no tiene archivo', 'error');
+  const link = document.createElement('a');
+  link.href = act.fileData;
+  link.download = act.fileName || 'actividad';
+  link.click();
+  showToast(`⬇ Descargando ${act.fileName || 'archivo'}...`, 'success');
+}
+
+// =============================================
+// SUBMIT MODAL
+// =============================================
+function openSubmitModal(act) {
+  currentActivityId = act.id;
+  pendingStudentFile = null;
+  document.getElementById('submit-modal-title').textContent = act.name;
+  document.getElementById('submit-modal-desc').textContent = act.desc || 'Sube tu actividad resuelta';
+  document.getElementById('student-file-info').style.display = 'none';
+  document.getElementById('submit-modal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('submit-modal').classList.remove('open');
+  currentActivityId = null;
+  pendingStudentFile = null;
+}
+
+async function submitActivity() {
+  if (!pendingStudentFile) return showToast('❌ Selecciona un archivo para entregar', 'error');
+
+  const btn = document.getElementById('btn-submit-activity');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Enviando...';
+
+  const fileData = await readFileAsDataURL(pendingStudentFile);
+
+  await dbAdd('submissions', {
+    activityId: currentActivityId,
+    userId: currentUser.id,
+    userName: currentUser.name,
+    fileName: pendingStudentFile.name,
+    fileData,
+    submittedAt: new Date().toISOString()
+  });
+
+  closeModal();
+  await loadActivities(currentCourseId);
+  showToast('✅ Actividad entregada correctamente', 'success');
+
+  btn.disabled = false;
+  btn.innerHTML = 'Entregar';
+}
+
+// =============================================
+// FILE HANDLING
+// =============================================
+function readFileAsDataURL(file) {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = (e) => resolve(e.target.result);
+    reader.readAsDataURL(file);
+  });
+}
+
+function handleTeacherFile(input) {
+  if (input.files[0]) {
+    pendingTeacherFile = input.files[0];
+    showFileInfo('teacher-file-info', pendingTeacherFile);
+  }
+}
+function handleTeacherDrop(e) {
+  e.preventDefault();
+  document.getElementById('teacher-upload-area').classList.remove('dragging');
+  const file = e.dataTransfer.files[0];
+  if (file) {
+    pendingTeacherFile = file;
+    showFileInfo('teacher-file-info', file);
+  }
+}
+function handleStudentFile(input) {
+  if (input.files[0]) {
+    pendingStudentFile = input.files[0];
+    showFileInfo('student-file-info', pendingStudentFile);
+  }
+}
+function handleStudentDrop(e) {
+  e.preventDefault();
+  document.getElementById('student-upload-area').classList.remove('dragging');
+  const file = e.dataTransfer.files[0];
+  if (file) {
+    pendingStudentFile = file;
+    showFileInfo('student-file-info', file);
+  }
+}
+
+function showFileInfo(elId, file) {
+  const el = document.getElementById(elId);
+  el.style.display = 'block';
+  const size = file.size > 1024*1024 ? (file.size/1024/1024).toFixed(1)+' MB' : Math.round(file.size/1024)+' KB';
+  el.innerHTML = `<div class="file-badge">📎 ${file.name} · ${size}</div>`;
+}
+
+// =============================================
+// UI HELPERS
+// =============================================
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function showView(view) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('view-' + view).classList.add('active');
+  const navId = view === 'course-detail' ? 'nav-courses' : `nav-${view}`;
+  const navEl = document.getElementById(navId);
+  if (navEl) navEl.classList.add('active');
+}
+
+function showErr(el, msg) {
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+let toastTimer;
+function showToast(msg, type = '') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast ${type} show`;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+// =============================================
+// SEED DATA (demo courses by teacher)
+// =============================================
+async function seedDemoData() {
+  const courses = await dbGetAll('courses');
+  if (courses.length > 0) return;
+
+  const teacherId = 0;
+
+  const demoC = [
+    { name: 'Matemáticas Avanzadas', subject: 'Matemáticas', desc: 'Álgebra, cálculo y estadística aplicada.', emoji: '📐', color: 'rgba(91,156,246,0.12)', teacherId, teacherName: 'Prof. Sistema', createdAt: new Date().toISOString() },
+    { name: 'Historia del Perú', subject: 'Historia', desc: 'Desde culturas prehispánicas hasta la actualidad.', emoji: '🏛️', color: 'rgba(232,197,71,0.12)', teacherId, teacherName: 'Prof. Sistema', createdAt: new Date().toISOString() },
+    { name: 'Introducción a Python', subject: 'Tecnología', desc: 'Programación desde cero con Python.', emoji: '🐍', color: 'rgba(76,175,125,0.12)', teacherId, teacherName: 'Prof. Sistema', createdAt: new Date().toISOString() },
+  ];
+
+  const ids = [];
+  for (const c of demoC) ids.push(await dbAdd('courses', c));
+
+  const demoA = [
+    { courseId: ids[0], name: 'Guía de Álgebra Lineal', type: 'doc', desc: 'Material de estudio sobre matrices y vectores.', fileData: null, fileName: null, teacherId, createdAt: new Date().toISOString() },
+    { courseId: ids[0], name: 'Tarea 1 — Sistemas de Ecuaciones', type: 'task', desc: 'Resolver los 10 ejercicios de la página 45.', fileData: null, fileName: null, teacherId, createdAt: new Date().toISOString() },
+    { courseId: ids[1], name: 'Lectura: Imperio Inca', type: 'doc', desc: 'Texto sobre organización del Tahuantinsuyo.', fileData: null, fileName: null, teacherId, createdAt: new Date().toISOString() },
+    { courseId: ids[1], name: 'Evaluación — Siglo XIX', type: 'quiz', desc: 'Quiz sobre la independencia del Perú.', fileData: null, fileName: null, teacherId, createdAt: new Date().toISOString() },
+    { courseId: ids[2], name: 'Instalación de Python', type: 'doc', desc: 'Guía paso a paso para configurar tu entorno.', fileData: null, fileName: null, teacherId, createdAt: new Date().toISOString() },
+    { courseId: ids[2], name: 'Proyecto 1 — Calculadora', type: 'task', desc: 'Crea una calculadora básica en Python.', fileData: null, fileName: null, teacherId, createdAt: new Date().toISOString() },
+  ];
+
+  for (const a of demoA) await dbAdd('activities', a);
+}
+
+// =============================================
+// INIT
+// =============================================
+async function init() {
+  await initDB();
+
+  // ── PURGE: clear all previously registered users ──
+  const PURGE_KEY = 'edu_purged_v1';
+  if (!localStorage.getItem(PURGE_KEY)) {
+    await dbClearAll('users');
+    await dbClearAll('submissions');
+    localStorage.setItem(PURGE_KEY, '1');
+    sessionStorage.removeItem('edu_user');
+  }
+
+  await seedDemoData();
+
+  // Check session
+  const saved = sessionStorage.getItem('edu_user');
+  if (saved) {
+    const savedUser = JSON.parse(saved);
+    // Verify user still exists in DB
+    const allUsers = await dbGetAll('users');
+    const stillExists = allUsers.find(u => u.id === savedUser.id);
+    if (stillExists) {
+      currentUser = stillExists;
+      await showDashboard();
+    } else {
+      sessionStorage.removeItem('edu_user');
+      showScreen('screen-auth');
+    }
+  } else {
+    showScreen('screen-auth');
+  }
+
+  document.getElementById('loading-overlay').style.display = 'none';
+}
+
+init();
+</script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<script>
+  // EmailJS se inicializa automáticamente con la PUBLIC_KEY definida arriba
+  // Solo funciona cuando reemplaces TU_PUBLIC_KEY con tu clave real de emailjs.com
+  if (typeof emailjs !== 'undefined') {
+    emailjs.init(EMAILJS_PUBLIC_KEY);
+  }
+</script>
+
+</body>
+</html>
